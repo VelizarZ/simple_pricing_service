@@ -4,13 +4,34 @@ import os
 
 API = os.getenv("API", "http://localhost:8000")
 
-st.title("Pricing Service")
+st.title("Simple Pricing Service")
 
-S0 = st.number_input("S₀", 0.0, 100000.0, 100.0)
-K = st.number_input("K", 0.0, 100000.0, 100.0)
-r = st.number_input("r (interest rate)", -1.0, 1.0, 0.01)
-T = st.number_input("T (years)", 0.0, 50.0, 1.0)
-sigma = st.number_input("σ (volatility)", 0.0, 5.0, 0.2)
+# Financial parameters with helpful tooltips
+S0 = st.number_input(
+    "S₀ (Spot Price)", 
+    0.0, 100000.0, 100.0,
+    help="Current market price of the underlying asset"
+)
+K = st.number_input(
+    "K (Strike/Forward Price)", 
+    0.0, 100000.0, 100.0,
+    help="For forwards: delivery price. For options: strike price"
+)
+r = st.number_input(
+    "r (Risk-Free Interest Rate)", 
+    -1.0, 1.0, 0.01,
+    help="Continuously compounded annual rate (0.01 = 1%)"
+)
+T = st.number_input(
+    "T (Time to Maturity in Years)", 
+    0.0, 50.0, 1.0,
+    help="Time until expiration (0.5 = 6 months, 1.0 = 1 year)"
+)
+sigma = st.number_input(
+    "σ (Volatility)", 
+    0.0, 5.0, 0.2,
+    help="Annual volatility as decimal (0.2 = 20%). Used only for options."
+)
 
 # Add option type selector
 option_type = st.selectbox("Option Type", ["call", "put"])
