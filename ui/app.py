@@ -1,7 +1,8 @@
 import streamlit as st
 import requests
+import os
 
-API = "http://localhost:8000"
+API = os.getenv("API", "http://localhost:8000")
 
 st.title("Pricing Service")
 

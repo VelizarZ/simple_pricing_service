@@ -1,12 +1,44 @@
 services:
+
   api:
-    build: .
+    build:
+      context: .
+      dockerfile: app/Dockerfile
+    container_name: pricing_api
     ports:
       - "8000:8000"
+    environment:
+      REDIS_URL: "redis://redis:6379"
+    depends_on:
+      - redis
+    volumes:
+      - ./app:/code/app
+    networks:
+      - pricing-net
 
   ui:
-    build: ./ui
+    build:
+      context: .
+      dockerfile: ui/Dockerfile
+    container_name: pricing_ui
     ports:
       - "8501:8501"
+    environment:
+      API: "http://api:8000"
     depends_on:
       - api
+    volumes:
+      - ./ui:/code/ui
+    networks:
+      - pricing-net
+
+  redis:
+    image: redis:7
+    container_name: pricing_redis
+    ports:
+      - "6379:6379"
+    networks:
+      - pricing-net
+
+networks:
+  pricing-net:
