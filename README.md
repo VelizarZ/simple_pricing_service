@@ -28,10 +28,10 @@ $$\Delta_{\text{call}} = N(d_1)$$
 $$\Delta_{\text{put}} = N(d_1) - 1$$
 
 #### Vega
-$$\text{Vega} = S_0 \sqrt{T}\, N'(d_1)$$
+$$\text{Vega} = S_0 \sqrt{T}\, \phi(d_1)$$
 
 Where the standard normal PDF is:
-$$N'(x) = \frac{1}{\sqrt{2\pi}} e^{-x^2 / 2}$$
+$$\phi(x) = \frac{1}{\sqrt{2\pi}} e^{-x^2 / 2}$$
 
 
 ####
