@@ -52,3 +52,7 @@ In a production environment, an ingress layer—typically a reverse proxy or API
 
 Useful resources:
 https://www.columbia.edu/~mh2078/FoundationsFE/BlackScholes.pdf
+
+## Running the Application
+
+To run the application, use Docker Compose: `docker-compose up --build`. The API will be available at `http://localhost:8000` and the Streamlit UI at `http://localhost:8501`.
