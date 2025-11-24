@@ -21,9 +21,9 @@ $$\frac{dS_t}{S_t} = \mu dt + \sigma dW_t$$
 
 #### Delta
 - **Call delta**:
-$$\Delta_{\text{call}} = N(d_1)$$
+$$\Delta_{\text{call}} = \Phi(d_1)$$
 - **Put delta**:
-$$\Delta_{\text{put}} = N(d_1) - 1$$
+$$\Delta_{\text{put}} = \Phi(d_1) - 1$$
 
 #### Vega
 $$\text{Vega} = S_0 \sqrt{T}\, \phi(d_1)$$
