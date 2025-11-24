@@ -6,7 +6,7 @@ API = os.getenv("API", "http://localhost:8000")
 
 st.title("Simple Pricing Service")
 
-# Financial parameters with helpful tooltips
+# Financial parameters 
 S0 = st.number_input(
     "S₀ (Spot Price)", 
     0.0, 100000.0, 100.0,
@@ -33,7 +33,7 @@ sigma = st.number_input(
     help="Annual volatility as decimal (0.2 = 20%). Used only for options."
 )
 
-# Add option type selector
+# European option type 
 option_type = st.selectbox("Option Type", ["call", "put"])
 
 if st.button("Price Forward"):

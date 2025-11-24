@@ -58,11 +58,11 @@ def price_forward(S0: float, K: float, r: float, T: float):
         print_response(response, "/price/forward")
         return response
     except requests.exceptions.ConnectionError:
-        print(f"\n❌ Error: Could not connect to API at {API_BASE_URL}")
+        print(f"\nError: Could not connect to API at {API_BASE_URL}")
         print("   Make sure the API service is running!")
         return None
     except Exception as e:
-        print(f"\n❌ Unexpected error: {e}")
+        print(f"\nUnexpected error: {e}")
         return None
 
 
@@ -90,11 +90,11 @@ def price_european_option(S0: float, K: float, r: float, sigma: float, T: float,
         print_response(response, f"/price/european-option (type={option_type})")
         return response
     except requests.exceptions.ConnectionError:
-        print(f"\n❌ Error: Could not connect to API at {API_BASE_URL}")
+        print(f"\nError: Could not connect to API at {API_BASE_URL}")
         print("   Make sure the API service is running!")
         return None
     except Exception as e:
-        print(f"\n❌ Unexpected error: {e}")
+        print(f"\nUnexpected error: {e}")
         return None
 
 
@@ -108,11 +108,11 @@ def main():
     try:
         health_check = requests.get(f"{API_BASE_URL}/docs")
         if health_check.status_code == 200:
-            print(f"✅ API is reachable at {API_BASE_URL}")
+            print(f" API is reachable at {API_BASE_URL}")
         else:
-            print(f"⚠️  API returned status {health_check.status_code}")
+            print(f"API returned status {health_check.status_code}")
     except:
-        print(f"⚠️  Could not verify API connectivity at {API_BASE_URL}")
+        print(f"ould not verify API connectivity at {API_BASE_URL}")
         print("   Continuing anyway...\n")
     
     # Sample 1: Forward Contract

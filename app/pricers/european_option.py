@@ -2,7 +2,7 @@
 from __future__ import annotations
 import math
 from typing import Dict
-
+import numpy as np
 
 SQRT_2PI = math.sqrt(2 * math.pi)
 
@@ -37,7 +37,7 @@ def price_european_option(
     r : float
         Continuously compounded risk-free rate
     sigma : float
-        Volatility (annual, > 0). If sigma == 0, the function uses the T->0 limit.
+        Volatility (annual, > 0). 
     T : float
         Time to maturity in years (>= 0)
     option_type : str
@@ -55,59 +55,33 @@ def price_european_option(
         raise ValueError("K must be non-negative")
     if T < 0:
         raise ValueError("T must be non-negative")
+    if sigma <= 0:
+        raise ValueError("Sigma must be bigger then 0")    
     if option_type not in ("call", "put"):
         raise ValueError("option_type must be 'call' or 'put'")
 
-    # Trivial / boundary cases
-    if T == 0:
-        # Option at maturity: payoff
-        if option_type == "call":
-            price = max(S0 - K, 0.0)
-            delta = 1.0 if S0 > K else 0.0 if S0 < K else 0.5
-        else:  # put
-            price = max(K - S0, 0.0)
-            delta = -1.0 if S0 < K else 0.0 if S0 > K else -0.5
-        vega = 0.0
-        return {"price": price, "delta": delta, "vega": vega}
 
-    if sigma <= 0:
-        # Zero volatility -> deterministic outcome discounted
-        forward = S0 - K * math.exp(-r * T)
-        if option_type == "call":
-            price = max(forward, 0.0)
-            # delta is either 1 (if forward > 0) or 0
-            delta = 1.0 if forward > 0 else 0.0
-        else:
-            price = max(-forward, 0.0)
-            delta = -1.0 if forward < 0 else 0.0
-        vega = 0.0
-        return {"price": price, "delta": delta, "vega": vega}
-
-    # Black-Scholes core
-    sqrtT = math.sqrt(T)
-    sigma_sqrtT = sigma * sqrtT
-    # careful step-by-step with logs and division
-    lnS_K = math.log(S0 / K) if S0 > 0 and K > 0 else float("-inf")
-    d1 = (lnS_K + (r + 0.5 * sigma * sigma) * T) / sigma_sqrtT
-    d2 = d1 - sigma_sqrtT
+    # Black-Scholes 
+    d1 = (np.log(S0 / K) + (r + ((sigma**2)/2)) * T) / (sigma * math.sqrt(T))
+    d2 = d1 - (sigma * math.sqrt(T))
 
     Nd1 = _std_normal_cdf(d1)
     Nd2 = _std_normal_cdf(d2)
-    nd1 = _std_normal_pdf(d1)
+    phi_d1 = _std_normal_pdf(d1)
 
-    discK = K * math.exp(-r * T)
+    discounted_strike = K * math.exp(-r * T)
 
     if option_type == "call":
-        price = S0 * Nd1 - discK * Nd2
+        price = S0 * Nd1 - discounted_strike * Nd2
         delta = Nd1
     else:  # put
-        # Put-call parity: P = C - S + K e^{-rT}
-        call_price = S0 * Nd1 - discK * Nd2
-        price = call_price - S0 + discK
+        # Put-call parity: P = C - S0 + K e^{-rT}
+        call_price = S0 * Nd1 - discounted_strike * Nd2
+        price = call_price - S0 + discounted_strike
         delta = Nd1 - 1.0
 
-    # Vega (same for call/put in Black-Scholes)
-    vega = S0 * sqrtT * nd1
+    # Vega 
+    vega = S0 * (sigma * math.sqrt(T)) * phi_d1
 
     return {"price": price, "delta": delta, "vega": vega}
 

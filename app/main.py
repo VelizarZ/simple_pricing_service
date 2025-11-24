@@ -2,14 +2,12 @@ from fastapi import FastAPI, HTTPException
 from contextlib import asynccontextmanager
 from redis.asyncio import Redis
 import json
-import os
 import logging
 
 from pydantic import BaseModel
 from app.pricers.forward_option import price_forward
 from app.pricers.european_option import price_european_option
 
-# Configure logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
@@ -17,30 +15,27 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-# ----------------------------
-# Lifespan (startup + shutdown)
-# ----------------------------
+# Lifespan context
 @asynccontextmanager
 async def app_lifespan(app: FastAPI):
-    # Connect to Redis (no await needed on creation)
-    redis_url = os.getenv("REDIS_URL", "redis://localhost:6379")
+    # Connect to Redis instance
+    redis_url = "redis://localhost:6379"
     app.state.redis = Redis.from_url(
         redis_url,
         decode_responses=True
     )
-    logger.info(f"🚀 Redis connected at {redis_url}")
+    logger.info(f"Redis connected at {redis_url}")
     yield
-    # Clean shutdown
+    # Graceful shutdown
     await app.state.redis.aclose()
-    logger.info("🛑 Redis disconnected")
+    logger.info("Redis disconnected")
 
 
 app = FastAPI(lifespan=app_lifespan)
 
 
-# ----------------------------
+
 # Models
-# ----------------------------
 class ForwardRequest(BaseModel):
     S0: float
     K: float
@@ -57,22 +52,19 @@ class EuropeanOptionRequest(BaseModel):
     type: str  # call/put
 
 
-# ----------------------------
-# Helper: cache key
-# ----------------------------
+
+# cache key
 def make_cache_key(prefix: str, data: dict):
     return prefix + ":" + json.dumps(data, sort_keys=True)
 
 
-# ----------------------------
 # Endpoints
-# ----------------------------
 @app.post("/price/forward")
 async def price_forward_endpoint(req: ForwardRequest):
     """Price a stock forward contract. Returns price, delta, and vega."""
     try:
         redis = app.state.redis
-        req_dict = req.dict()
+        req_dict = req.model_dump()
         key = make_cache_key("forward", req_dict)
 
         # Check cache
@@ -105,7 +97,7 @@ async def price_option_endpoint(req: EuropeanOptionRequest):
     """Price a European stock option. Returns price, delta, and vega."""
     try:
         redis = app.state.redis
-        req_dict = req.dict()
+        req_dict = req.model_dump()
         key = make_cache_key("european", req_dict)
 
         # Check cache
