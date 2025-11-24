@@ -8,7 +8,7 @@ The vega for a forward contract is assumed to be 0 and the delta is assumed to b
 
 For proividng the current value of an European stock option the closed-form Black-Scholes models was used. The model is essentialy the solution the of the BSM PDE with the assumption that the underlying stock pricing has a trajectory defined by geometric Brownian motion. Issues with these assumption can be that the underlying dynamics don't invovle jumps, volatility is not constant and non-stationarity in parametrization.
 
-#### Solving the Black-Scholes Equation Yields
+#### The Black-Scholes Equation 
 $$C = S_t \Phi(d_1) - Ke^{-rt} \Phi(d_2)$$
 
 $$\Phi(x) = \int_{-\infty}^x \frac{1}{\sqrt{2\pi}}e^{\frac{-s^2}{2}}ds$$
@@ -23,24 +23,15 @@ $$\frac{dS_t}{S_t} = \mu dt + \sigma dW_t$$
 
 #### Delta
 - **Call delta**:
-$$
-\Delta_{\text{call}} = N(d_1)
-$$
-
+$$\Delta_{\text{call}} = N(d_1)$$
 - **Put delta**:
-$$
-\Delta_{\text{put}} = N(d_1) - 1
-$$
+$$\Delta_{\text{put}} = N(d_1) - 1$$
 
 #### Vega
-$$
-\text{Vega} = S_0 \sqrt{T}\, N'(d_1)
-$$
+$$\text{Vega} = S_0 \sqrt{T}\, N'(d_1)$$
 
 Where the standard normal PDF is:
-$$
-N'(x) = \frac{1}{\sqrt{2\pi}} e^{-x^2 / 2}
-$$
+$$N'(x) = \frac{1}{\sqrt{2\pi}} e^{-x^2 / 2}$$
 
 
 ####
